@@ -2,7 +2,7 @@
 
 // Format name to proper case (first letter uppercase, rest lowercase)
 const formatNameToProperCase = (name: string): string => {
-	if (!name || typeof name !== 'string') {
+	if (!name) {
 		return '';
 	}
 	
@@ -16,7 +16,7 @@ const formatNameToProperCase = (name: string): string => {
 
 // Extract first name from full name
 export const extractFirstName = (fullName: string): string => {
-	if (!fullName || typeof fullName !== 'string') {
+	if (!fullName) {
 		return '';
 	}
 
@@ -27,7 +27,7 @@ export const extractFirstName = (fullName: string): string => {
 	// Format 2: "Lastname, Firstname" - return the part after comma
 	// Format 3: "Lastname Firstname Middle" - return the second part (first name)
 
-	let firstName = '';
+	let firstName: string;
 
 	if (trimmed.includes(',')) {
 		// Handle "Lastname, Firstname" format
@@ -45,7 +45,7 @@ export const extractFirstName = (fullName: string): string => {
 
 // Validate if a string looks like a person's name
 export const isValidPersonName = (value: string): boolean => {
-  if (!value || typeof value !== 'string') return false;
+  if (!value) return false;
   
   const trimmed = value.trim();
   
