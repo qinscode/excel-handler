@@ -156,17 +156,19 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
             const nameCell = row[nameIdx];
             if (nameCell && typeof nameCell === 'string') {
               const trimmed = nameCell.trim();
-              // Skip if it's empty, numeric, or matches excluded patterns
-              if (trimmed && 
-                  !['Outstanding', 'Completed', '0', '0.00', 'ghuang', 'irasanen', 'kdaengrungrot', 'sjbailey'].includes(trimmed) &&
-                  trimmed.length > 2 &&
-                  !/^\d+[A-Z]*\s*-\s*\d+$/.test(trimmed) && // Exclude room number format
-                  !/^\d+$/.test(trimmed) && // Exclude pure numbers
-                  !/^[\d.]+$/.test(trimmed) && // Exclude decimal numbers
-                  !trimmed.includes('WELCOME') && // Exclude descriptions
-                  !trimmed.includes('LETTER') &&
-                  !trimmed.includes('REQUIREMENT') &&
-                  !/^[A-Z]{1,3}\d+[A-Z]*$/.test(trimmed)) { // Exclude codes like "A1", "BC123"
+                             // Skip if it's empty, numeric, or matches excluded patterns
+               if (trimmed && 
+                   !['Outstanding', 'Completed', '0', '0.00', 'ghuang', 'irasanen', 'kdaengrungrot', 'sjbailey'].includes(trimmed) &&
+                   trimmed.length > 2 &&
+                   !/^\d+[A-Z]*\s*-\s*\d+$/.test(trimmed) && // Exclude room number format
+                   !/^\d+$/.test(trimmed) && // Exclude pure numbers
+                   !/^[\d.]+$/.test(trimmed) && // Exclude decimal numbers
+                   !trimmed.includes('WELCOME') && // Exclude descriptions
+                   !trimmed.includes('LETTER') &&
+                   !trimmed.includes('REQUIREMENT') &&
+                   !/^[A-Z]{1,3}\d+[A-Z]*$/.test(trimmed) && // Exclude codes like "A1", "BC123"
+                   !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(trimmed) && // Exclude date formats
+                   !/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) { // Exclude date formats like 2025-06-13
                 potentialNames.push({ index: nameIdx, value: trimmed });
               }
             }
@@ -191,19 +193,43 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
             const candidate = row[8].trim();
             if (!['Outstanding', 'Completed', '0', '0.00'].includes(candidate) &&
                 !/^\d+[A-Z]*\s*-\s*\d+$/.test(candidate) &&
-                !/^\d+$/.test(candidate)) {
+                !/^\d+$/.test(candidate) &&
+                !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(candidate)) {
               name = candidate;
             }
           }
           
-          // Strategy 3: If still no name, look for the most likely candidate from potential names
+          // Strategy 3: Prefer column 9 (index 9) if it contains a valid name
+          if (!name && row[9] && typeof row[9] === 'string' && row[9].trim()) {
+            const candidate = row[9].trim();
+            if (!['Outstanding', 'Completed', '0', '0.00'].includes(candidate) &&
+                !/^\d+[A-Z]*\s*-\s*\d+$/.test(candidate) &&
+                !/^\d+$/.test(candidate) &&
+                !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(candidate)) {
+              name = candidate;
+              if (isDev) {
+                console.log(`🎯 Selected name from column 9: "${candidate}"`);
+              }
+            }
+          }
+          
+          // Strategy 4: If still no name, look for the most likely candidate from potential names
           if (!name && potentialNames.length > 0) {
-            // Prefer names that look like real person names (contain spaces, mixed case, etc.)
-            const bestCandidate = potentialNames.find(p => 
+            // Filter out obvious non-names and prefer realistic name patterns
+            const filteredCandidates = potentialNames.filter(p => 
+              !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(p.value) && // No dates
+              !/^\d{4}-\d{2}-\d{2}$/.test(p.value) && // No ISO dates
+              p.value.length > 3 && // Reasonable length
+              !/^\d+$/.test(p.value) // Not just numbers
+            );
+            
+            // Prefer names that look like real person names
+            const bestCandidate = filteredCandidates.find(p => 
               /^[A-Z][a-z]+ [A-Z][a-z]+/.test(p.value) || // "First Last" pattern
-              /^[A-Z][a-z]+, [A-Z][a-z]+/.test(p.value) || // "Last, First" pattern
-              (p.value.includes(' ') && p.value.length > 5) // Has space and reasonable length
-            ) || potentialNames[0]; // Fallback to first candidate
+              /^[A-Z][a-z]+, [A-Z][a-z]+/.test(p.value) || // "Last, First" pattern  
+              /^[A-Z]+ [A-Z]+/.test(p.value) || // "FIRST LAST" pattern
+              (p.value.includes(' ') && p.value.length > 5 && p.index >= 7) // Has space, reasonable length, and from later columns
+            ) || filteredCandidates[0]; // Fallback to first filtered candidate
             
             if (bestCandidate) {
               name = bestCandidate.value;
