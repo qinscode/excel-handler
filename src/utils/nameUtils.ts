@@ -1,27 +1,46 @@
 // Name processing utilities
 
+// Format name to proper case (first letter uppercase, rest lowercase)
+const formatNameToProperCase = (name: string): string => {
+	if (!name || typeof name !== 'string') {
+		return '';
+	}
+	
+	const trimmed = name.trim();
+	if (trimmed.length === 0) {
+		return '';
+	}
+	
+	return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+};
+
 // Extract first name from full name
 export const extractFirstName = (fullName: string): string => {
-  if (!fullName || typeof fullName !== 'string') {
-    return '';
-  }
-  
-  const trimmed = fullName.trim();
-  
-  // Handle common name formats
-  // Format 1: "Firstname Lastname" - return the first part directly
-  // Format 2: "Lastname, Firstname" - return the part after comma
-  // Format 3: "Firstname Middle Lastname" - return the first part
-  
-  if (trimmed.includes(',')) {
-    // Handle "Lastname, Firstname" format
-    const parts = trimmed.split(',');
-    return parts.length > 1 ? (parts[1] || '').trim() : (parts[0] || '').trim();
-  } else {
-    // Handle "Firstname Lastname" or "Firstname Middle Lastname" format
-    const parts = trimmed.split(/\s+/);
-    return parts[0] || '';
-  }
+	if (!fullName || typeof fullName !== 'string') {
+		return '';
+	}
+
+	const trimmed = fullName.trim();
+
+	// Handle common name formats
+	// Format 1: "Lastname Firstname" - return the second part (first name)
+	// Format 2: "Lastname, Firstname" - return the part after comma
+	// Format 3: "Lastname Firstname Middle" - return the second part (first name)
+
+	let firstName = '';
+
+	if (trimmed.includes(',')) {
+		// Handle "Lastname, Firstname" format
+		const parts = trimmed.split(',');
+		firstName = parts.length > 1 ? (parts[1] || '').trim() : (parts[0] || '').trim();
+	} else {
+		// Handle "Lastname Firstname" or "Lastname Firstname Middle" format
+		const parts = trimmed.split(/\s+/);
+		firstName = parts.length > 1 ? (parts[1] || '') : (parts[0] || '');
+	}
+
+	// Format the first name to proper case (first letter uppercase)
+	return formatNameToProperCase(firstName);
 };
 
 // Validate if a string looks like a person's name
