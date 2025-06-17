@@ -25,7 +25,8 @@ export const extractFirstName = (fullName: string): string => {
 	// Handle common name formats
 	// Format 1: "Lastname Firstname" - return the second part (first name)
 	// Format 2: "Lastname, Firstname" - return the part after comma
-	// Format 3: "Lastname Firstname Middle" - return the second part (first name)
+	// Format 3: "Lastname MiddleName Firstname" - return the last part (first name)
+	// Format 4: "Lastname1 Lastname2 Firstname" - return the last part (first name)
 
 	let firstName: string;
 
@@ -34,9 +35,19 @@ export const extractFirstName = (fullName: string): string => {
 		const parts = trimmed.split(',');
 		firstName = parts.length > 1 ? (parts[1] || '').trim() : (parts[0] || '').trim();
 	} else {
-		// Handle "Lastname Firstname" or "Lastname Firstname Middle" format
+		// Handle various formats without comma
 		const parts = trimmed.split(/\s+/);
-		firstName = parts.length > 1 ? (parts[1] || '') : (parts[0] || '');
+		if (parts.length >= 3) {
+			// Format: "Lastname MiddleName Firstname" or "Lastname1 Lastname2 Firstname"
+			// Take the last part as the first name
+			firstName = parts[parts.length - 1] || '';
+		} else if (parts.length === 2) {
+			// Format: "Lastname Firstname"
+			firstName = parts[1] || '';
+		} else {
+			// Single name
+			firstName = parts[0] || '';
+		}
 	}
 
 	// Format the first name to proper case (first letter uppercase)
