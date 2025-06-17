@@ -1,16 +1,9 @@
-// Lazy-loaded Excel utilities to reduce initial bundle size
+// Excel file I/O operations
+import * as XLSX from 'xlsx';
 import type { WelcomeLetterRecord } from '../types/excel';
 
-// Lazy load XLSX only when needed
-const loadXLSX = async () => {
-  const XLSX = await import('xlsx');
-  return XLSX;
-};
-
-// Read Excel file with lazy-loaded XLSX
-export const readExcelFileLazy = async (file: File): Promise<Array<Array<any>>> => {
-  const XLSX = await loadXLSX();
-  
+// Read Excel file
+export const readExcelFile = (file: File): Promise<Array<Array<any>>> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
@@ -54,29 +47,40 @@ export const readExcelFileLazy = async (file: File): Promise<Array<Array<any>>> 
   });
 };
 
-// Export to Excel with lazy-loaded XLSX
-export const exportToExcelLazy = async (records: Array<WelcomeLetterRecord>, filename: string = 'filtered_welcome_letters.xlsx') => {
-  const XLSX = await loadXLSX();
+// Export processing results to Excel file
+export const exportToExcel = (records: Array<WelcomeLetterRecord>, filename: string = 'filtered_welcome_letters.xlsx') => {
+  // Create worksheet
+  const worksheet = XLSX.utils.json_to_sheet(records);
   
-  if (records.length === 0) {
-    console.warn('No records to export');
-    return;
-  }
-
-  // Create workbook and worksheet
+  // Create workbook
   const workbook = XLSX.utils.book_new();
-  const worksheetData = [
-    ['Full Name', 'First Name', 'Description'], // Header row
-    ...records.map(record => [record.FullName, record.FirstName, record.Description])
-  ];
-  const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Welcome Letters');
-
-  // Export file
+  
+  // Download file
   XLSX.writeFile(workbook, filename);
 };
 
-// Re-export other utilities that don't depend on XLSX from the refactored modules
-export { processWelcomeLetters } from './dataProcessor';
-export { validateExcelFile, formatFileSize } from './excelIO';
-export type { WelcomeLetterRecord, ExcelProcessResult } from '../types/excel'; 
+// Validate file type
+export const validateExcelFile = (file: File): boolean => {
+  const validTypes = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+    'application/vnd.ms-excel', // .xls
+    'text/csv' // .csv
+  ];
+  
+  return validTypes.includes(file.type) || 
+         file.name.toLowerCase().endsWith('.xlsx') || 
+         file.name.toLowerCase().endsWith('.xls') ||
+         file.name.toLowerCase().endsWith('.csv');
+};
+
+// Format file size display
+export const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, index)).toFixed(2)) + ' ' + sizes[index];
+}; 

@@ -7,4 +7,7 @@ type IconProps = HeroIconSVGProps & {
 	title?: string;
 	titleId?: string;
 };
-export type Heroicon = React.FC<IconProps>; 
+export type Heroicon = React.FC<IconProps>;
+
+// Excel related types
+export type { WelcomeLetterRecord, ExcelProcessResult } from './excel'; 
