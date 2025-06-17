@@ -398,16 +398,15 @@ export const ExcelApp = () => {
                 <TableContainer 
                   component={Paper} 
                   sx={{ 
-                    maxHeight: 400,
                     borderRadius: "12px",
                     boxShadow: "0 4px 20px rgba(16, 185, 129, 0.1)",
                     border: "1px solid rgba(16, 185, 129, 0.1)",
                     background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.8) 100%)",
                     backdropFilter: "blur(10px)",
-                    overflow: "hidden"
+                    width: "100%"
                   }}
                 >
-                  <Table stickyHeader>
+                  <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell 
@@ -417,10 +416,6 @@ export const ExcelApp = () => {
                             color: "#047857",
                             background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)",
                             borderBottom: "2px solid rgba(16, 185, 129, 0.2)",
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 10,
-                            backdropFilter: "blur(10px)",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
                             py: 2.5
@@ -435,10 +430,6 @@ export const ExcelApp = () => {
                             color: "#047857",
                             background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)",
                             borderBottom: "2px solid rgba(16, 185, 129, 0.2)",
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 10,
-                            backdropFilter: "blur(10px)",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
                             py: 2.5
@@ -453,10 +444,6 @@ export const ExcelApp = () => {
                             color: "#047857",
                             background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)",
                             borderBottom: "2px solid rgba(16, 185, 129, 0.2)",
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 10,
-                            backdropFilter: "blur(10px)",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
                             py: 2.5
@@ -492,14 +479,16 @@ export const ExcelApp = () => {
                         >
                           <TableCell 
                             sx={{ 
-                              maxWidth: 200, 
+                              minWidth: 200,
+                              maxWidth: 350, 
                               wordBreak: "break-word",
                               fontSize: "0.9rem",
                               fontWeight: "500",
                               color: "#1f2937",
                               py: 2,
                               borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
-                              transition: "all 0.2s ease-in-out"
+                              transition: "all 0.2s ease-in-out",
+                              whiteSpace: "normal"
                             }}
                           >
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -517,7 +506,8 @@ export const ExcelApp = () => {
                           </TableCell>
                           <TableCell 
                             sx={{ 
-                              maxWidth: 150, 
+                              minWidth: 120,
+                              maxWidth: 200, 
                               wordBreak: "break-word",
                               fontSize: "0.85rem",
                               color: "#4b5563",
