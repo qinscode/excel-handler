@@ -16,16 +16,16 @@ export function encrypt(message: string, s0: number): string {
   for (const char of message) {
     if (char.match(/[a-zA-Z]/)) {
       // Convert character to its numeric representation (a=1, b=2, ..., z=26)
-      const num = char.toLowerCase().charCodeAt(0) - 96;
+      const number = char.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
 
       // Apply the shift and wrap around if necessary
-      let shiftedNum = (num + shift) % 26;
-      if (shiftedNum === 0) {
-        shiftedNum = 26;
+      let shiftedNumber = (number + shift) % 26;
+      if (shiftedNumber === 0) {
+        shiftedNumber = 26;
       }
 
       // Convert the shifted numeric representation back to a character
-      const shiftedChar = String.fromCharCode(shiftedNum + 96);
+      const shiftedChar = String.fromCharCode(shiftedNumber + 'a'.charCodeAt(0));
 
       // Preserve the case of the original character
       if (char === char.toUpperCase()) {
@@ -35,7 +35,7 @@ export function encrypt(message: string, s0: number): string {
       }
 
       // Update the shift value for the next character
-      shift = num;
+      shift = number;
     } else {
       ciphertext += char;
     }
@@ -57,16 +57,16 @@ export function decrypt(ciphertext: string, s0: number): string {
   for (const char of ciphertext) {
     if (char.match(/[a-zA-Z]/)) {
       // Convert character to its numeric representation (a=1, b=2, ..., z=26)
-      const num = char.toLowerCase().charCodeAt(0) - 96;
+      const number = char.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
 
       // Apply the reverse shift and wrap around if necessary
-      let shiftedNum = (num - shift) % 26;
-      if (shiftedNum <= 0) {
-        shiftedNum += 26;
+      let shiftedNumber = (number - shift + 26) % 26;
+      if (shiftedNumber <= 0) {
+        shiftedNumber += 26;
       }
 
       // Convert the shifted numeric representation back to a character
-      const shiftedChar = String.fromCharCode(shiftedNum + 96);
+      const shiftedChar = String.fromCharCode(shiftedNumber + 'a'.charCodeAt(0));
 
       // Preserve the case of the original character
       if (char === char.toUpperCase()) {
@@ -76,7 +76,7 @@ export function decrypt(ciphertext: string, s0: number): string {
       }
 
       // Update the shift value for the next character
-      shift = shiftedNum;
+      shift = shiftedNumber;
     } else {
       plaintext += char;
     }

@@ -43,37 +43,38 @@ export const readExcelFile = (file: File): Promise<Array<Array<any>>> => {
     
     reader.onload = (e) => {
       try {
-        const data = e.target?.result;
-        if (!data) {
+        const result = e.target?.result;
+        if (!result) {
           reject(new Error('File data is empty'));
           return;
         }
+        
+        const data = new Uint8Array(result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        if (!sheetName) {
+        
+        // Get the first worksheet
+        const worksheetName = workbook.SheetNames[0];
+        if (!worksheetName) {
+          reject(new Error('No worksheet found in the Excel file'));
+          return;
+        }
+        
+        const worksheet = workbook.Sheets[worksheetName];
+        if (!worksheet) {
           reject(new Error('Worksheet is empty'));
           return;
         }
-        const worksheet = workbook.Sheets[sheetName];
-        if (!worksheet) {
-          reject(new Error('Worksheet content is empty'));
-          return;
-        }
         
-        // Convert worksheet to 2D array, maintain original format
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-          header: 1, 
-          defval: '' 
-        });
-        
-        resolve(jsonData);
+        // Convert to JSON array
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+        resolve(jsonData as Array<Array<any>>);
       } catch (error) {
-        reject(error);
+        reject(new Error(`Failed to parse Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`));
       }
     };
     
     reader.onerror = () => {
-      reject(new Error('File reading failed'));
+      reject(new Error('Failed to read file'));
     };
     
     reader.readAsArrayBuffer(file);
@@ -95,7 +96,7 @@ export const processWelcomeLetters = (data: Array<Array<any>>): ExcelProcessResu
   for (let index = 0; index < data.length; index++) {
     const row = data[index];
     
-    // 确保row存在且是数组
+    // Ensure row exists and is an array
     if (!row || !Array.isArray(row)) {
       continue;
     }
@@ -105,14 +106,14 @@ export const processWelcomeLetters = (data: Array<Array<any>>): ExcelProcessResu
     let name = '';
     
     // Check if it's a header row (skip header rows)
-    const isHeaderRow = row.some((cell, index) => {
+    const isHeaderRow = row.some((cell, cellIndex) => {
       if (cell && typeof cell === 'string') {
         const cellTrimmed = cell.trim();
         if (cellTrimmed === 'WELCOME BACK LETTER' || cellTrimmed === 'WELCOME LETTER') {
           // Check the number of non-empty columns in this row, if few then it might be a header row
           const nonEmptyCount = row.filter(c => c && typeof c === 'string' && c.trim()).length;
           // If it's column 2 and has few non-empty columns, consider it a header row
-          return index === 1 && nonEmptyCount <= 3;
+          return cellIndex === 1 && nonEmptyCount <= 3;
         }
       }
       return false;
@@ -146,7 +147,7 @@ export const processWelcomeLetters = (data: Array<Array<any>>): ExcelProcessResu
           if (isDevelopment) {
             console.log(`✅ Found WELCOME LETTER row ${index + 1}:`, cell);
             console.log(`🔍 Full row data:`, row);
-            console.log(`🔍 Row columns (first 15):`, row.slice(0, 15).map((cell, index_) => `Col${index_}: "${cell}"`));
+            console.log(`🔍 Row columns (first 15):`, row.slice(0, 15).map((cellValue, cellIndex_) => `Col${cellIndex_}: "${String(cellValue ?? '')}"`));
           }
           
           // Enhanced name detection logic
@@ -156,19 +157,19 @@ export const processWelcomeLetters = (data: Array<Array<any>>): ExcelProcessResu
             const nameCell = row[nameIndex];
             if (nameCell && typeof nameCell === 'string') {
               const trimmed = nameCell.trim();
-                             // Skip if it's empty, numeric, or matches excluded patterns
-               if (trimmed && 
-                   !['Outstanding', 'Completed', '0', '0.00', 'ghuang', 'irasanen', 'kdaengrungrot', 'sjbailey'].includes(trimmed) &&
-                   trimmed.length > 2 &&
-                   !/^\d+[A-Z]*\s*-\s*\d+$/.test(trimmed) && // Exclude room number format
-                   !/^\d+$/.test(trimmed) && // Exclude pure numbers
-                   !/^[\d.]+$/.test(trimmed) && // Exclude decimal numbers
-                   !trimmed.includes('WELCOME') && // Exclude descriptions
-                   !trimmed.includes('LETTER') &&
-                   !trimmed.includes('REQUIREMENT') &&
-                   !/^[A-Z]{1,3}\d+[A-Z]*$/.test(trimmed) && // Exclude codes like "A1", "BC123"
-                   !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(trimmed) && // Exclude date formats
-                   !/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) { // Exclude date formats like 2025-06-13
+              // Skip if it's empty, numeric, or matches excluded patterns
+              if (trimmed && 
+                  !['Outstanding', 'Completed', '0', '0.00', 'ghuang', 'irasanen', 'kdaengrungrot', 'sjbailey'].includes(trimmed) &&
+                  trimmed.length > 2 &&
+                  !/^\d+[A-Z]*\s*-\s*\d+$/.test(trimmed) && // Exclude room number format
+                  !/^\d+$/.test(trimmed) && // Exclude pure numbers
+                  !/^[\d.]+$/.test(trimmed) && // Exclude decimal numbers
+                  !trimmed.includes('WELCOME') && // Exclude descriptions
+                  !trimmed.includes('LETTER') &&
+                  !trimmed.includes('REQUIREMENT') &&
+                  !/^[A-Z]{1,3}\d+[A-Z]*$/.test(trimmed) && // Exclude codes like "A1", "BC123"
+                  !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(trimmed) && // Exclude date formats
+                  !/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) { // Exclude date formats like 2025-06-13
                 potentialNames.push({ index: nameIndex, value: trimmed });
               }
             }
@@ -314,4 +315,4 @@ export const formatFileSize = (bytes: number): string => {
   const index = Math.floor(Math.log(bytes) / Math.log(k));
   
   return parseFloat((bytes / Math.pow(k, index)).toFixed(2)) + ' ' + sizes[index];
-};
+}; 

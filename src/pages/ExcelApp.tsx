@@ -12,7 +12,6 @@ import {
   TableHead,
   TableRow,
   Alert,
-  CircularProgress,
   Chip,
   LinearProgress
 } from "@mui/material";
@@ -41,6 +40,42 @@ export const ExcelApp = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const processFile = async (fileToProcess: File) => {
+    setIsProcessing(true);
+    setError("");
+    setUploadProgress(0);
+
+    try {
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(previous => {
+          if (previous >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return previous + 10;
+        });
+      }, 100);
+
+      // Read Excel file
+      const data = await readExcelFile(fileToProcess);
+      
+      // Process data
+      const result = processWelcomeLetters(data);
+      
+      setUploadProgress(100);
+      setProcessResult(result);
+      
+      if (result.records.length === 0) {
+        setError("No data records containing 'WELCOME LETTER' were found");
+      }
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : "An error occurred while processing the file");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (!selectedFile) return;
@@ -62,47 +97,6 @@ export const ExcelApp = () => {
     
     // Auto-start processing
     await processFile(selectedFile);
-  };
-
-  const processFile = async (fileToProcess: File) => {
-    setIsProcessing(true);
-    setError("");
-    setUploadProgress(0);
-
-    try {
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
-
-      // Read Excel file
-      const data = await readExcelFile(fileToProcess);
-      
-      // Process data
-      const result = processWelcomeLetters(data);
-      
-      setUploadProgress(100);
-      setProcessResult(result);
-      
-      if (result.records.length === 0) {
-        setError("No data records containing 'WELCOME LETTER' were found");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred while processing the file");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleProcessFile = async () => {
-    if (!file) return;
-    await processFile(file);
   };
 
   const handleDownload = () => {
@@ -282,35 +276,35 @@ export const ExcelApp = () => {
                 borderColor: "rgba(16, 185, 129, 0.5)",
               }
             }}
+            onClick={() => fileInputRef.current?.click()}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
           >
             <input
               ref={fileInputRef}
-              type="file"
               accept=".xlsx,.xls,.csv"
-              onChange={handleFileSelect}
               style={{ display: "none" }}
+              type="file"
+              onChange={handleFileSelect}
             />
             
             {!file ? (
               <>
                 <CloudUploadIcon sx={{ fontSize: 48, color: "rgba(16, 185, 129, 0.6)", mb: 2 }} />
-                <Typography variant="h6" sx={{ mb: 1, color: "rgba(16, 185, 129, 0.8)" }}>
+                <Typography sx={{ mb: 1, color: "rgba(16, 185, 129, 0.8)" }} variant="h6">
                   Click or drag to upload Excel file
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography color="text.secondary" variant="body2">
                   Supports .xlsx, .xls, .csv formats, max 10MB (auto-processing after upload)
                 </Typography>
               </>
             ) : (
               <Box>
                 <DescriptionIcon sx={{ fontSize: 48, color: "rgba(16, 185, 129, 0.8)", mb: 2 }} />
-                <Typography variant="h6" sx={{ mb: 1, color: "rgba(16, 185, 129, 0.8)" }}>
+                <Typography sx={{ mb: 1, color: "rgba(16, 185, 129, 0.8)" }} variant="h6">
                   {file.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography color="text.secondary" sx={{ mb: 2 }} variant="body2">
                   File size: {formatFileSize(file.size)}
                 </Typography>
                 {!isProcessing && (
@@ -331,12 +325,12 @@ export const ExcelApp = () => {
           {/* Processing Progress */}
           {isProcessing && (
             <Paper elevation={0} sx={{ p: 3, mb: 3, backgroundColor: "rgba(16, 185, 129, 0.05)" }}>
-              <Typography variant="h6" sx={{ mb: 2, color: "rgba(16, 185, 129, 0.8)" }}>
+              <Typography sx={{ mb: 2, color: "rgba(16, 185, 129, 0.8)" }} variant="h6">
                 Processing Progress
               </Typography>
               <LinearProgress 
-                variant="determinate" 
                 value={uploadProgress} 
+                variant="determinate" 
                 sx={{ 
                   height: 8, 
                   borderRadius: 4,
@@ -345,7 +339,7 @@ export const ExcelApp = () => {
                   }
                 }} 
               />
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography color="text.secondary" sx={{ mt: 1 }} variant="body2">
                 {uploadProgress}% completed
               </Typography>
             </Paper>
@@ -354,9 +348,9 @@ export const ExcelApp = () => {
           {/* Error Messages */}
           {error && (
             <Alert 
-              severity="error" 
+              icon={<ErrorIcon />} 
+              severity="error"
               sx={{ mb: 3 }}
-              icon={<ErrorIcon />}
             >
               {error}
             </Alert>
@@ -366,21 +360,21 @@ export const ExcelApp = () => {
           {processResult && (
             <Paper elevation={0} sx={{ p: 3, mb: 3, backgroundColor: "rgba(16, 185, 129, 0.05)" }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-                <Typography variant="h6" sx={{ color: "rgba(16, 185, 129, 0.8)" }}>
+                <Typography sx={{ color: "rgba(16, 185, 129, 0.8)" }} variant="h6">
                   Processing Results
                 </Typography>
                 <Button
-                  variant="contained"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent event bubbling
-                    handleDownload();
-                  }}
                   startIcon={<DownloadIcon />}
+                  variant="contained"
                   sx={{
                     background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                     "&:hover": {
                       background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                     }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent event bubbling
+                    handleDownload();
                   }}
                 >
                   Download Results
@@ -389,13 +383,13 @@ export const ExcelApp = () => {
               
               <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
                 <Chip 
-                  label={`Total rows: ${processResult.totalRows}`} 
                   color="primary" 
+                  label={`Total rows: ${processResult.totalRows}`} 
                   variant="outlined" 
                 />
                 <Chip 
-                  label={`Records found: ${processResult.records.length}`} 
                   color="success" 
+                  label={`Records found: ${processResult.records.length}`} 
                   variant="outlined" 
                 />
               </Box>
