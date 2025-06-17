@@ -31,4 +31,36 @@ export default defineConfig({
 			"@components": path.resolve(__dirname, "./src/components"),
 		},
 	},
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					// Separate vendor libraries into their own chunks
+					'mui': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+					'excel': ['xlsx'],
+					'router': ['@tanstack/react-router'],
+					'query': ['@tanstack/react-query'],
+					'react-vendor': ['react', 'react-dom'],
+				},
+			},
+		},
+		// Increase chunk size warning limit to 1000kb to reduce warnings
+		chunkSizeWarningLimit: 1000,
+		// Enable source maps for better debugging (optional)
+		sourcemap: false,
+	},
+	// Enable code splitting for better caching
+	optimizeDeps: {
+		include: [
+			'react',
+			'react-dom',
+			'@mui/material',
+			'@mui/icons-material',
+			'@emotion/react',
+			'@emotion/styled',
+			'xlsx',
+			'@tanstack/react-router',
+			'@tanstack/react-query'
+		],
+	},
 });

@@ -24,13 +24,13 @@ import {
   Analytics as AnalyticsIcon
 } from "@mui/icons-material";
 import { 
-  readExcelFile, 
+  readExcelFileLazy as readExcelFile, 
   processWelcomeLetters, 
-  exportToExcel, 
+  exportToExcelLazy as exportToExcel, 
   validateExcelFile,
   formatFileSize,
   type ExcelProcessResult
-} from "../utils/excel";
+} from "../utils/excelLazy";
 
 export const ExcelApp = () => {
   const [file, setFile] = useState<File | null>(null);
