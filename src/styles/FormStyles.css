@@ -1,0 +1,313 @@
+
+.transparent-bg {
+  background-color: transparent !important;
+}
+
+.form-container {
+  background-color: transparent !important;
+}
+
+
+.MuiPaper-elevation {
+  box-shadow: none !important;
+}
+
+
+@keyframes pulse {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* 表单标题样式 */
+.form-title {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #1E40AF !important;
+  margin-bottom: 1.5rem !important;
+  position: relative;
+  display: inline-block;
+}
+
+.form-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60%;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #3B82F6 0%, #4F46E5 100%);
+  transition: width 0.3s ease;
+}
+
+.form-title:hover::after {
+  width: 100%;
+}
+
+.form-subtitle {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  margin-bottom: 1rem !important;
+  position: relative;
+  padding-left: 16px;
+  transition: transform 0.2s ease;
+}
+
+.form-subtitle:hover {
+  transform: translateX(2px);
+}
+
+.form-subtitle::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #3B82F6 0%, #4F46E5 100%);
+}
+
+/* 输入框样式 */
+.enhanced-input .MuiOutlinedInput-root {
+  border-radius: 12px !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+}
+
+.enhanced-input .MuiOutlinedInput-root:hover {
+  transform: translateY(-1px);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.enhanced-input .MuiOutlinedInput-root.Mui-focused {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.enhanced-input label.Mui-focused {
+  color: #3B82F6 !important;
+}
+
+.enhanced-input label.Mui-error {
+  color: #DC2626 !important;
+  font-weight: 500;
+}
+
+.enhanced-input .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s ease;
+}
+
+.enhanced-input:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.enhanced-input .Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  border-width: 1px !important;
+}
+
+/* Error state for input fields */
+.enhanced-input .Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(220, 38, 38, 0.6) !important;
+  border-width: 1px !important;
+}
+
+.enhanced-input:hover .Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(220, 38, 38, 0.8) !important;
+}
+
+.enhanced-input .MuiOutlinedInput-root.Mui-error {
+  background-color: rgba(254, 226, 226, 0.1);
+}
+
+/* Helper text and error styles */
+.enhanced-input .MuiFormHelperText-root {
+  margin-top: 4px !important;
+  font-size: 0.8rem !important;
+  transition: all 0.2s ease;
+}
+
+.enhanced-input .MuiFormHelperText-root.Mui-error {
+  color: #DC2626 !important;
+  font-weight: 600 !important;
+  font-size: 0.825rem !important;
+  letter-spacing: 0.2px;
+  background-color: rgba(220, 38, 38, 0.08);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 6px !important;
+  border-left: 3px solid #DC2626;
+  animation: errorPulse 2s infinite;
+}
+
+@keyframes errorPulse {
+  0%, 100% {
+    background-color: rgba(220, 38, 38, 0.08);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.15);
+  }
+}
+
+/* 输入框图标 */
+.input-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(79, 70, 229, 0.08));
+  margin-right: 8px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.input-icon-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(79, 70, 229, 0.12));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.enhanced-input:hover .input-icon-container,
+.enhanced-input .Mui-focused + .input-icon-container {
+  transform: scale(1.1);
+}
+
+.enhanced-input:hover .input-icon-container::before,
+.enhanced-input .Mui-focused + .input-icon-container::before {
+  opacity: 1;
+}
+
+/* 按钮样式 */
+.submit-button {
+  border-radius: 12px !important;
+  padding: 10px 24px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0.3px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: linear-gradient(45deg, #3B82F6, #4F46E5) !important;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2), 0 2px 4px -1px rgba(59, 130, 246, 0.1) !important;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+  z-index: -1;
+  transition: left 0.8s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, #2563EB, #4338CA) !important;
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.25), 0 4px 6px -2px rgba(59, 130, 246, 0.15) !important;
+}
+
+/*.submit-button:hover::before {*/
+/*  left: 100%;*/
+/*}*/
+
+.submit-button .MuiButton-startIcon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.submit-button:hover .MuiButton-startIcon {
+  transform: scale(1.1);
+}
+
+/* Process indicators */
+.process-indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.process-indicator .MuiCircularProgress-root {
+  animation: rotate 2s linear infinite;
+  filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.3));
+}
+
+.process-indicator::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08), transparent 70%);
+  opacity: 0;
+  z-index: -1;
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tab-container {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.25));
+  backdrop-filter: blur(22px);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.tab-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.tab-container:hover::after {
+  opacity: 1;
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  0% { opacity: 0; transform: translateX(10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
