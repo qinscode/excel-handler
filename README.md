@@ -1,4 +1,4 @@
-<h1 align="center">🔐 Shift Cipher Processor</h1>
+<h1 align="center">📊 Excel Handler</h1>
 
 <p align="center">
   <a href="#license">
@@ -16,46 +16,64 @@
   <a href="https://tailwindcss.com/">
     <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwind-css" alt="Tailwind CSS">
   </a>
+  <a href="https://mui.com/">
+    <img src="https://img.shields.io/badge/Material_UI-7.1-007FFF?style=flat-square&logo=mui" alt="Material-UI">
+  </a>
 </p>
 
 <p align="center">
-  A modern web-based shift cipher encryption and decryption tool built with React and TypeScript. 
-  This application demonstrates a variable shift cipher algorithm where the shift value changes 
-  based on the previous character's position in the alphabet.
+  A modern web-based Excel processing tool for extracting Welcome Letter data built with React and TypeScript. 
+  This application provides an intuitive interface for uploading Excel files, processing Welcome Letter records, 
+  and exporting filtered results with advanced name detection and data validation.
 </p>
 
 ## ✨ Features
 
-- **Variable Shift Cipher**: Implements a cipher where the shift value changes based on the previous character
-- **Real-time Processing**: Instant encryption and decryption as you type
-- **Modern UI**: Beautiful, responsive interface with Material-UI components
-- **Keyboard Shortcuts**: Ctrl/Cmd + Enter to quickly process text
-- **Two-Step Demonstration**: Shows both encryption (shift=3) and decryption (shift=6) results
-- **Mobile Friendly**: Responsive design that works on all devices
+- **Excel File Processing**: Upload and process .xlsx, .xls, and .csv files
+- **Welcome Letter Detection**: Automatically identify and extract Welcome Letter records
+- **Smart Name Extraction**: Advanced algorithms to detect and extract person names from various column formats
+- **Real-time Processing**: Instant file processing with progress indicators
+- **Data Export**: Export filtered results to Excel format with timestamp
+- **Drag & Drop Upload**: Modern file upload interface with drag-and-drop support
+- **Mobile Responsive**: Works seamlessly on desktop, tablet, and mobile devices
+- **File Validation**: Built-in file type and size validation (10MB limit)
 
-## 🧮 How the Cipher Works
+## 🧮 How It Works
 
-The shift cipher in this application uses a variable shift algorithm:
+The Excel Handler processes files through several stages:
 
-1. **Encryption Phase**: 
-   - Initial shift starts at 3
-   - For each alphabetic character, apply the current shift
-   - Update the shift to the numeric value of the original character (a=1, b=2, ..., z=26)
-   - Non-alphabetic characters are preserved unchanged
+1. **File Upload**: 
+   - Accepts Excel files (.xlsx, .xls) and CSV files
+   - Validates file type and size (max 10MB)
+   - Supports drag-and-drop and click-to-browse
 
-2. **Decryption Phase**:
-   - Takes the encrypted text and applies reverse shift starting at 6
-   - For each character, subtract the shift and wrap around if necessary
-   - Update the shift to the numeric value of the decrypted character
+2. **Data Processing**:
+   - Reads Excel worksheets and converts to structured data
+   - Identifies rows containing "WELCOME LETTER" keywords
+   - Filters out header rows and invalid data entries
+   - Applies advanced name detection algorithms
+
+3. **Name Extraction**:
+   - Uses multiple strategies to find person names in various column positions
+   - Validates potential names against common patterns
+   - Extracts first names from full names automatically
+   - Handles different name formats (First Last, Last, First, etc.)
+
+4. **Export Results**:
+   - Generates clean Excel files with extracted data
+   - Includes Full Name, First Name, and Description columns
+   - Adds timestamp to filename for organization
 
 ## 🛠️ Tech Stack
 
 - **React 18** with TypeScript for the frontend
 - **Material-UI** for beautiful, accessible UI components
 - **Vite** for fast development and optimized builds
-- **TanStack Router** for routing
+- **TanStack Router** for client-side routing
+- **TanStack Query** for data fetching and caching
+- **XLSX** library for Excel file processing
 - **Tailwind CSS** for additional styling
-- **TypeScript** for type safety
+- **TypeScript** for type safety and better development experience
 
 ## 🚀 Getting Started
 
@@ -67,8 +85,8 @@ The shift cipher in this application uses a variable shift algorithm:
 
 1. Clone the repository
 ```bash
-git clone https://github.com/qinscode/ShiftCipherProcessor.git
-cd shift-cipher-processor
+git clone https://github.com/qinscode/excelhandler.git
+cd excelhandler
 ```
 
 2. Install dependencies
@@ -98,20 +116,39 @@ pnpm build
 
 ## 📝 Usage
 
-1. **Enter Text**: Type or paste your plaintext in the input area
-2. **Process**: Click the "PROCESS" button or use Ctrl/Cmd + Enter
-3. **View Results**: 
-   - See the encrypted text (using shift=3)
-   - See the decrypted text (encrypted text decrypted with shift=6)
-4. **Clear**: Use "Clear All" to reset all fields
+1. **Upload File**: 
+   - Click "Choose File" or drag and drop an Excel file onto the upload area
+   - Supported formats: .xlsx, .xls, .csv (max 10MB)
 
-## 🎮 Example
+2. **Automatic Processing**: 
+   - File is automatically processed upon upload
+   - Progress indicator shows processing status
+   - Results appear in a table below
 
-**Input**: `Hello World`
+3. **Review Results**:
+   - View extracted Welcome Letter records
+   - Check Full Name, First Name, and Description columns
+   - See processing statistics (total rows, processed rows, found records)
 
-**Encrypted** (shift=3): `Kfrly Xnrzr`
+4. **Export Data**:
+   - Click "Download Filtered Data" to export results
+   - File is saved with timestamp: `filtered_welcome_letters_YYYYMMDDHHMMSS.xlsx`
 
-**Decrypted** (shift=6): `Czjfi Qeklf`
+5. **Reset**: Use "Clear All" to reset and process a new file
+
+## 🎮 Example Processing
+
+**Input Excel File**: Contains various data with some rows having "WELCOME LETTER" in description column
+
+**Processing Results**:
+- **Total Rows**: 150
+- **Processed Rows**: 12
+- **Welcome Letter Records Found**: 8
+
+**Output**: Clean Excel file with extracted records containing:
+- Full Name: "John Smith"
+- First Name: "John" 
+- Description: "WELCOME LETTER - New Student Orientation"
 
 ## 📜 Available Scripts
 
@@ -129,27 +166,63 @@ pnpm build
 ```
 src/
 ├── components/          # React components
+│   └── layout/         # Layout components
 ├── pages/              # Page components
-├── routes/             # Routing configuration
+│   └── ExcelApp.tsx    # Main Excel processing application
+├── routes/             # TanStack Router configuration
 ├── types/              # TypeScript type definitions
-├── utils/              # Utility functions (cipher algorithms)
+│   ├── index.ts        # Common types
+│   └── excel.ts        # Excel-specific types
+├── utils/              # Utility functions
+│   ├── nameUtils.ts    # Name processing utilities
+│   ├── excelIO.ts      # Excel I/O operations
+│   ├── dataProcessor.ts # Data processing logic
+│   ├── excelRefactored.ts # Main Excel utilities entry point
+│   ├── excelLazy.ts    # Lazy-loaded Excel utilities
+│   └── README.md       # Utils documentation
 ├── styles/             # Global styles
 └── main.tsx           # Application entry point
 ```
 
-## 🔧 Core Algorithm
+## 🏗️ Architecture
 
-The cipher implementation can be found in `src/utils/cipher.ts`:
+### Bundle Optimization
+The application is highly optimized for performance:
+- **Main app**: 4.82 kB (2.36 kB gzipped)
+- **ExcelApp component**: 13.22 kB (4.52 kB gzipped) - lazy loaded
+- **Excel processing**: 429.50 kB (143.09 kB gzipped) - lazy loaded
+- **Material-UI**: 306.68 kB (97.04 kB gzipped) - separate chunk
 
-- `encrypt(message: string, s0: number)` - Encrypts text with variable shift
-- `decrypt(ciphertext: string, s0: number)` - Decrypts text with variable shift
+### Code Splitting
+- Lazy loading for heavy components and libraries
+- Manual chunking for vendor libraries
+- Dynamic imports for Excel processing functionality
+
+### Modular Design
+Excel processing functionality is split into focused modules:
+- **Types**: Interface definitions
+- **Name Utils**: Name processing and validation
+- **Excel I/O**: File reading and writing operations
+- **Data Processor**: Core business logic
+
+## 🔧 Core Algorithms
+
+The Excel processing implementation includes:
+
+- **File Reading**: `readExcelFile()` - Converts Excel files to structured data
+- **Data Processing**: `processWelcomeLetters()` - Identifies and extracts Welcome Letter records
+- **Name Detection**: `findBestNameCandidate()` - Advanced name detection from various column formats
+- **Data Export**: `exportToExcel()` - Generates clean Excel output files
 
 ## 🎨 Features
 
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-- **Accessibility**: Built with Material-UI for better accessibility
-- **Error Handling**: Graceful error handling with user-friendly messages
-- **Modern UX**: Smooth animations and intuitive interface
+- **Modern UI**: Beautiful Material-UI components with custom styling
+- **Responsive Design**: Works seamlessly across all device sizes
+- **Accessibility**: Built with accessibility best practices
+- **Error Handling**: Comprehensive error handling with user-friendly messages
+- **File Validation**: Robust validation for file types and sizes
+- **Progress Indicators**: Real-time processing feedback
+- **Data Visualization**: Clear presentation of processing results
 
 ## 📝 License
 
@@ -164,145 +237,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 **Author**: Fudong Qin
 
 For questions or suggestions, please open an issue on GitHub.
-
-# Excel Handler
-
-一个基于 React 和 TypeScript 构建的Web Excel处理工具，用于提取和过滤包含"Welcome Letter"的数据记录。
-
-## 功能特性
-
-- 📊 **Excel文件处理**: 支持上传和处理 .xlsx, .xls, .csv 格式文件
-- 🔍 **智能数据提取**: 自动识别和提取包含"WELCOME LETTER"的相关数据
-- 📋 **数据预览**: 实时预览处理结果，包含Name、Description和Type字段
-- 💾 **结果导出**: 将处理结果导出为新的Excel文件
-- 🎨 **现代化UI**: 美观的用户界面，支持拖拽上传
-- ⚡ **实时处理**: 文件上传后即时处理，无需等待
-
-## 技术栈
-
-- **前端框架**: React 18 + TypeScript
-- **构建工具**: Vite
-- **UI组件库**: Material-UI (MUI)
-- **样式方案**: TailwindCSS
-- **路由管理**: TanStack Router
-- **Excel处理**: SheetJS (xlsx)
-- **状态管理**: React Hooks
-
-## 快速开始
-
-### 环境要求
-
-- Node.js >= 18
-- pnpm >= 9 (推荐)
-
-### 安装
-
-```bash
-# 克隆项目
-git clone <your-repository>
-cd excel-handler
-
-# 安装依赖
-pnpm install
-```
-
-### 开发
-
-```bash
-# 启动开发服务器
-pnpm dev
-```
-
-访问 http://localhost:5173 查看应用。
-
-### 构建
-
-```bash
-# 构建生产版本
-pnpm build
-
-# 预览构建结果
-pnpm preview
-```
-
-## 使用说明
-
-1. **上传文件**: 点击或拖拽Excel文件到上传区域
-2. **开始处理**: 选择文件后点击"开始处理"按钮
-3. **查看结果**: 处理完成后查看提取的数据记录
-4. **下载结果**: 点击"下载结果"按钮保存处理后的Excel文件
-
-## 数据处理逻辑
-
-应用使用智能识别算法扫描Excel文件，能够处理以下两种情况：
-
-### 1. 标题行识别
-- 自动跳过作为标题的"WELCOME LETTER"和"WELCOME BACK LETTER"行
-- 这些通常显示为蓝色背景的节标题
-
-### 2. 数据行提取
-- 在数据行中查找包含"WELCOME LETTER"的记录
-- 智能定位姓名字段（通常在Requirement列之后的Name列）
-- 自动区分"WELCOME LETTER"和"WELCOME BACK LETTER"类型
-- 生成包含Name、Description、Type三个字段的结果数据
-
-### 3. 灵活处理
-- 能够处理不同的Excel格式和列结构
-- 自动过滤掉无效的数据行
-- 支持文件中只包含其中一种类型或两种类型都不存在的情况
-
-## 开发指南
-
-### 项目结构
-
-```
-src/
-├── components/         # 可复用组件
-├── pages/             # 页面组件
-│   └── ExcelApp.tsx   # 主要的Excel处理页面
-├── utils/             # 工具函数
-│   └── excel.ts       # Excel处理相关工具
-├── routes/            # 路由配置
-├── styles/            # 样式文件
-└── types/             # TypeScript类型定义
-```
-
-### 核心功能
-
-- `readExcelFile()`: 读取Excel文件并转换为二维数组
-- `processWelcomeLetters()`: 处理数据，提取Welcome Letter记录
-- `exportToExcel()`: 将结果导出为Excel文件
-- `validateExcelFile()`: 验证文件类型
-
-## 代码质量
-
-项目使用以下工具确保代码质量：
-
-- **ESLint**: 代码规范检查
-- **Prettier**: 代码格式化
-- **TypeScript**: 静态类型检查
-
-```bash
-# 代码检查
-pnpm lint
-
-# 代码格式化
-pnpm format
-```
-
-## 部署
-
-项目可以部署到任何静态网站托管服务：
-
-- Vercel
-- Netlify
-- GitHub Pages
-- 或其他静态托管服务
-
-## 许可证
-
-MIT License - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 贡献
-
-欢迎提交Issue和Pull Request来改进这个项目！

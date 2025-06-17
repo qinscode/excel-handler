@@ -108,7 +108,7 @@ export default function Root(): React.ReactElement {
 						<Box sx={{ display: "flex", gap: 3, justifyContent: "center" }}>
 							<Link
 								color="text.secondary"
-								href="https://github.com/qinscode"
+								href="https://github.com/qinscode/excel-handler.git"
 								sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
 								underline="hover"
 							>
@@ -118,7 +118,7 @@ export default function Root(): React.ReactElement {
 
 							<Link
 								color="text.secondary"
-								href="https://github.com/qinscode/GitHubRepoAnalyzer/blob/main/LICENSE"
+								href="https://github.com/qinscode/excel-handler.git/blob/main/LICENSE"
 								underline="hover"
 							>
 								MIT License
@@ -130,7 +130,7 @@ export default function Root(): React.ReactElement {
 							sx={{ mt: 1, opacity: 0.7 }}
 							variant="body2"
 						>
-							© {new Date().getFullYear()} GitHub Repository Analyzer v0.5.0
+							© {new Date().getFullYear()} Excel Handler v0.1.0
 							Developed by Jack Qin
 						</Typography>
 					</Box>
