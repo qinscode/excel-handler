@@ -20,8 +20,7 @@ import {
   Download as DownloadIcon,
   Description as DescriptionIcon,
   CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
-  Analytics as AnalyticsIcon
+  Error as ErrorIcon
 } from "@mui/icons-material";
 import { 
   readExcelFileLazy as readExcelFile, 
@@ -152,37 +151,27 @@ export const ExcelApp = () => {
   return (
     <Container className="!p-4 md:!p-8" maxWidth="xl">
       <Box className="mb-6 text-center">
-        <Box className="inline-flex items-center justify-center p-3 mb-4 rounded-full bg-gradient-to-br from-green-500/5 to-emerald-500/10">
+        <Box className="inline-flex items-center justify-center mb-6">
           <Box
             sx={{
               width: 150,
               height: 150,
               borderRadius: "50%",
-              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 8px 32px rgba(16, 185, 129, 0.3)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
               position: "relative",
-              overflow: "hidden",
               cursor: "pointer",
               transition: "all 0.3s ease-in-out",
               animation: "logoFloat 3s ease-in-out infinite",
               "&:hover": {
-                transform: "scale(1.05)",
-                boxShadow: "0 12px 40px rgba(16, 185, 129, 0.4)",
-              },
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                top: "10%",
-                left: "10%",
-                right: "10%",
-                bottom: "10%",
-                borderRadius: "50%",
-                background: "rgba(255, 255, 255, 0.1)",
-                border: "2px solid rgba(255, 255, 255, 0.2)",
-                animation: "innerRing 4s linear infinite",
+                transform: "scale(1.05) translateY(-2px)",
+                boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4)",
+                backdropFilter: "blur(25px)",
               },
               "@keyframes logoFloat": {
                 "0%, 100%": {
@@ -192,22 +181,17 @@ export const ExcelApp = () => {
                   transform: "translateY(-8px)",
                 },
               },
-              "@keyframes innerRing": {
-                "0%": {
-                  transform: "rotate(0deg)",
-                },
-                "100%": {
-                  transform: "rotate(360deg)",
-                },
-              },
             }}
           >
-            <AnalyticsIcon
-              sx={{
-                fontSize: "3.5rem",
-                color: "white",
-                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))",
-                zIndex: 1,
+            <img
+              src="/icon.png"
+              alt="Excel Handler Logo"
+              style={{
+                width: "128px",
+                height: "128px",
+                objectFit: "contain",
+                filter: "drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1))",
+                transition: "all 0.3s ease",
               }}
             />
           </Box>
