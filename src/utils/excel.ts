@@ -31,13 +31,13 @@ export interface WelcomeLetterRecord {
 }
 
 export interface ExcelProcessResult {
-  records: WelcomeLetterRecord[];
+  records: Array<WelcomeLetterRecord>;
   totalRows: number;
   processedRows: number;
 }
 
 // Read Excel file
-export const readExcelFile = (file: File): Promise<any[][]> => {
+export const readExcelFile = (file: File): Promise<Array<Array<any>>> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
@@ -64,7 +64,7 @@ export const readExcelFile = (file: File): Promise<any[][]> => {
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
           header: 1, 
           defval: '' 
-        }) as any[][];
+        });
         
         resolve(jsonData);
       } catch (error) {
@@ -81,19 +81,19 @@ export const readExcelFile = (file: File): Promise<any[][]> => {
 };
 
 // Process Excel data and extract Welcome Letter related records
-export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
-  const records: WelcomeLetterRecord[] = [];
+export const processWelcomeLetters = (data: Array<Array<any>>): ExcelProcessResult => {
+  const records: Array<WelcomeLetterRecord> = [];
   const totalRows = data.length;
   let processedRows = 0;
   
   // Debug information in development mode
-  const isDev = import.meta.env?.DEV;
-  if (isDev) {
+  const isDevelopment = import.meta.env?.DEV;
+  if (isDevelopment) {
     console.log('🔍 Starting Excel data processing:', { totalRows, firstRowLength: data[0]?.length });
   }
   
-  for (let i = 0; i < data.length; i++) {
-    const row = data[i];
+  for (let index = 0; index < data.length; index++) {
+    const row = data[index];
     
     // 确保row存在且是数组
     if (!row || !Array.isArray(row)) {
@@ -120,8 +120,8 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
     
     if (isHeaderRow) {
       // This is a header row, skip it
-      if (isDev) {
-        console.log(`📋 Skipping header row ${i + 1}:`, row.slice(0, 5));
+      if (isDevelopment) {
+        console.log(`📋 Skipping header row ${index + 1}:`, row.slice(0, 5));
       }
       continue;
     }
@@ -134,8 +134,8 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
           cell.includes('WELCOME') && cell.includes('LETTER')) {
         
         // Ensure this is a data row and not a header
-        const hasOtherData = row.some((c, idx) => {
-          return idx > colIndex && c && 
+        const hasOtherData = row.some((c, index_) => {
+          return index_ > colIndex && c && 
                  (typeof c === 'string' && c.trim() || typeof c === 'number');
         });
         
@@ -143,17 +143,17 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
           hasWelcomeLetter = true;
           description = String(cell).trim();
           
-          if (isDev) {
-            console.log(`✅ Found WELCOME LETTER row ${i + 1}:`, cell);
+          if (isDevelopment) {
+            console.log(`✅ Found WELCOME LETTER row ${index + 1}:`, cell);
             console.log(`🔍 Full row data:`, row);
-            console.log(`🔍 Row columns (first 15):`, row.slice(0, 15).map((cell, idx) => `Col${idx}: "${cell}"`));
+            console.log(`🔍 Row columns (first 15):`, row.slice(0, 15).map((cell, index_) => `Col${index_}: "${cell}"`));
           }
           
           // Enhanced name detection logic
           // First, let's check all columns to find potential names
           const potentialNames: Array<{ index: number; value: string }> = [];
-          for (let nameIdx = 0; nameIdx < row.length; nameIdx++) {
-            const nameCell = row[nameIdx];
+          for (let nameIndex = 0; nameIndex < row.length; nameIndex++) {
+            const nameCell = row[nameIndex];
             if (nameCell && typeof nameCell === 'string') {
               const trimmed = nameCell.trim();
                              // Skip if it's empty, numeric, or matches excluded patterns
@@ -169,12 +169,12 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
                    !/^[A-Z]{1,3}\d+[A-Z]*$/.test(trimmed) && // Exclude codes like "A1", "BC123"
                    !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(trimmed) && // Exclude date formats
                    !/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) { // Exclude date formats like 2025-06-13
-                potentialNames.push({ index: nameIdx, value: trimmed });
+                potentialNames.push({ index: nameIndex, value: trimmed });
               }
             }
           }
           
-          if (isDev) {
+          if (isDevelopment) {
             console.log(`🔍 Potential names found:`, potentialNames);
           }
           
@@ -207,7 +207,7 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
                 !/^\d+$/.test(candidate) &&
                 !/^\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/.test(candidate)) {
               name = candidate;
-              if (isDev) {
+              if (isDevelopment) {
                 console.log(`🎯 Selected name from column 9: "${candidate}"`);
               }
             }
@@ -233,7 +233,7 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
             
             if (bestCandidate) {
               name = bestCandidate.value;
-              if (isDev) {
+              if (isDevelopment) {
                 console.log(`🎯 Selected name from column ${bestCandidate.index}: "${bestCandidate.value}"`);
               }
             }
@@ -253,17 +253,17 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
       records.push(record);
       processedRows++;
       
-      if (isDev) {
+      if (isDevelopment) {
         console.log(`📝 Adding record ${processedRows}:`, record);
       }
     } else if (hasWelcomeLetter && !name) {
-      if (isDev) {
-        console.log(`❌ Row ${i + 1} has WELCOME LETTER but no name:`, { description, row: row.slice(0, 10) });
+      if (isDevelopment) {
+        console.log(`❌ Row ${index + 1} has WELCOME LETTER but no name:`, { description, row: row.slice(0, 10) });
       }
     }
   }
   
-  if (isDev) {
+  if (isDevelopment) {
     console.log('🎯 Processing completed:', { 
       totalRows, 
       processedRows, 
@@ -279,7 +279,7 @@ export const processWelcomeLetters = (data: any[][]): ExcelProcessResult => {
 };
 
 // Export processing results to Excel file
-export const exportToExcel = (records: WelcomeLetterRecord[], filename: string = 'filtered_welcome_letters.xlsx') => {
+export const exportToExcel = (records: Array<WelcomeLetterRecord>, filename: string = 'filtered_welcome_letters.xlsx') => {
   // Create worksheet
   const worksheet = XLSX.utils.json_to_sheet(records);
   
@@ -311,7 +311,7 @@ export const formatFileSize = (bytes: number): string => {
   
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
   
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}; 
+  return parseFloat((bytes / Math.pow(k, index)).toFixed(2)) + ' ' + sizes[index];
+};

@@ -401,26 +401,173 @@ export const ExcelApp = () => {
               </Box>
 
               {processResult.records.length > 0 && (
-                <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+                <TableContainer 
+                  component={Paper} 
+                  sx={{ 
+                    maxHeight: 400,
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 20px rgba(16, 185, 129, 0.1)",
+                    border: "1px solid rgba(16, 185, 129, 0.1)",
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.8) 100%)",
+                    backdropFilter: "blur(10px)",
+                    overflow: "hidden"
+                  }}
+                >
                   <Table stickyHeader>
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ fontWeight: "bold" }}>Full Name</TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>First Name</TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>Description</TableCell>
+                        <TableCell 
+                          sx={{ 
+                            fontWeight: "600",
+                            fontSize: "0.9rem",
+                            color: "#047857",
+                            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)",
+                            borderBottom: "2px solid rgba(16, 185, 129, 0.2)",
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 10,
+                            backdropFilter: "blur(10px)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                            py: 2.5
+                          }}
+                        >
+                          Full Name
+                        </TableCell>
+                        <TableCell 
+                          sx={{ 
+                            fontWeight: "600",
+                            fontSize: "0.9rem",
+                            color: "#047857",
+                            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)",
+                            borderBottom: "2px solid rgba(16, 185, 129, 0.2)",
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 10,
+                            backdropFilter: "blur(10px)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                            py: 2.5
+                          }}
+                        >
+                          First Name
+                        </TableCell>
+                        <TableCell 
+                          sx={{ 
+                            fontWeight: "600",
+                            fontSize: "0.9rem",
+                            color: "#047857",
+                            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)",
+                            borderBottom: "2px solid rgba(16, 185, 129, 0.2)",
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 10,
+                            backdropFilter: "blur(10px)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                            py: 2.5
+                          }}
+                        >
+                          Description
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {processResult.records.map((record, index) => (
-                        <TableRow key={index} sx={{ "&:nth-of-type(odd)": { backgroundColor: "rgba(0,0,0,0.02)" } }}>
-                          <TableCell sx={{ maxWidth: 200, wordBreak: "break-word" }}>
-                            {record.FullName}
+                        <TableRow 
+                          key={index} 
+                          sx={{ 
+                            "&:nth-of-type(odd)": { 
+                              backgroundColor: "rgba(16, 185, 129, 0.02)" 
+                            },
+                            "&:nth-of-type(even)": { 
+                              backgroundColor: "rgba(255, 255, 255, 0.5)" 
+                            },
+                            "&:hover": {
+                              backgroundColor: "rgba(16, 185, 129, 0.08)",
+                              transform: "translateX(4px)",
+                              transition: "all 0.2s ease-in-out",
+                              boxShadow: "0 2px 8px rgba(16, 185, 129, 0.15)"
+                            },
+                            borderLeft: "3px solid transparent",
+                            "&:hover .MuiTableCell-root": {
+                              borderLeft: "3px solid rgba(16, 185, 129, 0.4)"
+                            },
+                            cursor: "pointer"
+                          }}
+                        >
+                          <TableCell 
+                            sx={{ 
+                              maxWidth: 200, 
+                              wordBreak: "break-word",
+                              fontSize: "0.9rem",
+                              fontWeight: "500",
+                              color: "#1f2937",
+                              py: 2,
+                              borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
+                              transition: "all 0.2s ease-in-out"
+                            }}
+                          >
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <Box
+                                sx={{
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: "50%",
+                                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                  flexShrink: 0
+                                }}
+                              />
+                              {record.FullName}
+                            </Box>
                           </TableCell>
-                          <TableCell sx={{ maxWidth: 150, wordBreak: "break-word" }}>
-                            {record.FirstName}
+                          <TableCell 
+                            sx={{ 
+                              maxWidth: 150, 
+                              wordBreak: "break-word",
+                              fontSize: "0.85rem",
+                              color: "#4b5563",
+                              py: 2,
+                              borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
+                              transition: "all 0.2s ease-in-out"
+                            }}
+                          >
+                            <Chip
+                              label={record.FirstName}
+                              size="small"
+                              sx={{
+                                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                                color: "#047857",
+                                fontWeight: "500",
+                                fontSize: "0.75rem",
+                                border: "1px solid rgba(16, 185, 129, 0.2)",
+                                "&:hover": {
+                                  backgroundColor: "rgba(16, 185, 129, 0.15)"
+                                }
+                              }}
+                            />
                           </TableCell>
-                          <TableCell sx={{ maxWidth: 400, wordBreak: "break-word" }}>
-                            {record.Description}
+                          <TableCell 
+                            sx={{ 
+                              maxWidth: 400, 
+                              wordBreak: "break-word",
+                              fontSize: "0.85rem",
+                              color: "#6b7280",
+                              py: 2,
+                              borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
+                              transition: "all 0.2s ease-in-out"
+                            }}
+                          >
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <CheckCircleIcon 
+                                sx={{ 
+                                  fontSize: 16, 
+                                  color: "#10b981",
+                                  flexShrink: 0 
+                                }} 
+                              />
+                              {record.Description}
+                            </Box>
                           </TableCell>
                         </TableRow>
                       ))}

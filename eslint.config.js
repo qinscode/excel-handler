@@ -159,7 +159,7 @@ const unicornConfig = {
 		unicorn: eslintPluginUnicorn,
 	},
 	rules: {
-		"unicorn/custom-error-definition": "error",
+		"unicorn/custom-error-definition": "off",
 		"unicorn/empty-brace-spaces": "error",
 		"unicorn/no-array-for-each": "off",
 		"unicorn/no-array-reduce": "off",
@@ -183,6 +183,7 @@ const unicornConfig = {
 					props: false,
 					ref: false,
 					refs: false,
+					e:false
 				},
 				ignore: ["semVer", "SemVer"],
 			},
