@@ -26,7 +26,13 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
-      # 不需要 Node.js 和 pnpm，因为使用远程网页
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Set version from input or tag
         id: version
@@ -51,20 +57,12 @@ jobs:
         run: |
           (Get-Content "src-tauri/Cargo.toml") -replace 'version = ".*"', 'version = "${{ steps.version.outputs.VERSION }}"' | Set-Content "src-tauri/Cargo.toml"
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
-
       - name: Build Tauri App
-        run: |
-          cd src-tauri
-          cargo tauri build --target x86_64-pc-windows-msvc
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: tauri-apps/tauri-action@v0
         with:
-          tag_name: "v${{ steps.version.outputs.VERSION }}"
-          name: "Excel Handler v${{ steps.version.outputs.VERSION }}"
-          body: |
+          tagName: "v${{ steps.version.outputs.VERSION }}"
+          releaseName: "Excel Handler v${{ steps.version.outputs.VERSION }}"
+          releaseBody: |
             ## What's Changed
             - Windows installer (.msi) available for download
             - Portable executable (.exe) available for download
@@ -76,11 +74,9 @@ jobs:
             ## System Requirements
             - Windows 10 or later
             - x64 architecture
-          draft: false
+          releaseDraft: false
           prerelease: false
-          files: |
-            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
-            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+          args: --target x86_64-pc-windows-msvc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
