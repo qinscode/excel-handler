@@ -7,6 +7,9 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        args: [ '--target x86_64-pc-windows-msi' ]
     runs-on: windows-latest
 
     steps:
@@ -16,18 +19,26 @@ jobs:
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install frontend dependencies with pnpm
+        run: pnpm install
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
         with:
-          args: build
+          tagName: release-v__VERSION__
+          releaseName: 'GH Analyzer v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
