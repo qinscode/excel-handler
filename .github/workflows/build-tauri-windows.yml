@@ -30,6 +30,11 @@ jobs:
       - name: Install frontend dependencies with pnpm
         run: pnpm install
 
+      - name: Extract version from package.json
+        id: extract_version
+        shell: bash
+        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
         with:
