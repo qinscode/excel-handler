@@ -51,6 +51,9 @@ jobs:
         run: |
           (Get-Content "src-tauri/Cargo.toml") -replace 'version = ".*"', 'version = "${{ steps.version.outputs.VERSION }}"' | Set-Content "src-tauri/Cargo.toml"
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
       - name: Build Tauri App
         run: |
           cd src-tauri
