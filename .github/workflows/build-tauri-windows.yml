@@ -52,11 +52,16 @@ jobs:
           (Get-Content "src-tauri/Cargo.toml") -replace 'version = ".*"', 'version = "${{ steps.version.outputs.VERSION }}"' | Set-Content "src-tauri/Cargo.toml"
 
       - name: Build Tauri App
-        uses: tauri-apps/tauri-action@v0
+        run: |
+          cd src-tauri
+          cargo tauri build --target x86_64-pc-windows-msvc
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          tagName: "v${{ steps.version.outputs.VERSION }}"
-          releaseName: "Excel Handler v${{ steps.version.outputs.VERSION }}"
-          releaseBody: |
+          tag_name: "v${{ steps.version.outputs.VERSION }}"
+          name: "Excel Handler v${{ steps.version.outputs.VERSION }}"
+          body: |
             ## What's Changed
             - Windows installer (.msi) available for download
             - Portable executable (.exe) available for download
@@ -68,9 +73,11 @@ jobs:
             ## System Requirements
             - Windows 10 or later
             - x64 architecture
-          releaseDraft: false
+          draft: false
           prerelease: false
-          args: --target x86_64-pc-windows-msvc
+          files: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
