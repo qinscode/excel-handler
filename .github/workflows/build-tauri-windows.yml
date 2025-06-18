@@ -4,12 +4,17 @@ on:
   push:
     branches:
       - release
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0)'
+        required: true
+        default: '1.0.0'
 
 jobs:
   build:
-    strategy:
-      matrix:
-        args: [ '--target x86_64-pc-windows-msi' ]
     runs-on: windows-latest
 
     steps:
@@ -18,41 +23,96 @@ jobs:
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          targets: x86_64-pc-windows-msvc
 
-      - name: Extract version from package.json
-        id: extract_version
-        shell: bash
-        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+      # 不需要 Node.js 和 pnpm，因为使用远程网页
+
+      - name: Set version from input or tag
+        id: version
+        run: |
+          if ("${{ github.event.inputs.version }}" -ne "") {
+            $version = "${{ github.event.inputs.version }}"
+          } elseif ("${{ github.ref }}" -like "refs/tags/v*") {
+            $version = "${{ github.ref }}" -replace "refs/tags/v", ""
+          } else {
+            $version = "0.1.${{ github.run_number }}"
+          }
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "Release version: $version"
+
+      - name: Update Tauri config version
+        run: |
+          $config = Get-Content "src-tauri/tauri.conf.json" | ConvertFrom-Json
+          $config.version = "${{ steps.version.outputs.VERSION }}"
+          $config | ConvertTo-Json -Depth 10 | Set-Content "src-tauri/tauri.conf.json"
+
+      - name: Update Cargo.toml version
+        run: |
+          (Get-Content "src-tauri/Cargo.toml") -replace 'version = ".*"', 'version = "${{ steps.version.outputs.VERSION }}"' | Set-Content "src-tauri/Cargo.toml"
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
         with:
-          tagName: release-v__VERSION__
-          releaseName: 'GH Analyzer v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: true
+          tagName: "v${{ steps.version.outputs.VERSION }}"
+          releaseName: "Excel Handler v${{ steps.version.outputs.VERSION }}"
+          releaseBody: |
+            ## What's Changed
+            - Windows installer (.msi) available for download
+            - Portable executable (.exe) available for download
+            
+            ## Installation
+            1. Download the `.msi` file for automatic installation
+            2. Or download the `.exe` file for portable usage
+            
+            ## System Requirements
+            - Windows 10 or later
+            - x64 architecture
+          releaseDraft: false
           prerelease: false
-          args: ${{ matrix.args }}
+          args: --target x86_64-pc-windows-msvc
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-      - name: Create GitHub Release and upload artifacts
-        uses: softprops/action-gh-release@v2
-        if: success()
+  # 可选：添加多平台构建
+  build-multi-platform:
+    if: false  # 设置为 true 启用多平台构建
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: '--target x86_64-unknown-linux-gnu'
+          - platform: 'windows-latest'
+            args: '--target x86_64-pc-windows-msvc'
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      # 不需要前端依赖安装，因为使用远程网页
+
+      - name: Build Tauri App
+        uses: tauri-apps/tauri-action@v0
         with:
-          tag_name: release-${{ github.run_number }}
-          name: "Release ${{ github.run_number }}"
-          files: |
-            src-tauri/target/release/bundle/windows/**/*.msi
-            src-tauri/target/release/bundle/windows/**/*.exe
+          args: ${{ matrix.args }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
