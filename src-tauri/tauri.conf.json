@@ -4,18 +4,14 @@
   "version": "0.1.0",
   "identifier": "com.fudong.app",
   "build": {
-    "beforeDevCommand": "",
-    "devUrl": "https://excel.fudong.dev",
-    "beforeBuildCommand": "",
-    "frontendDist": ""
+    "devUrl": "https://excel.fudong.dev"
   },
   "app": {
     "windows": [
       {
         "title": "excel-handler",
-        "width": 1000,
-        "height": 1200,
-        "url": "https://excel.fudong.dev"
+        "width": 800,
+        "height": 600
       }
     ],
     "security": {
