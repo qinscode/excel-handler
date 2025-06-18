@@ -58,10 +58,6 @@ jobs:
           $config.version = "${{ steps.version.outputs.VERSION }}"
           $config | ConvertTo-Json -Depth 10 | Set-Content "src-tauri/tauri.conf.json"
 
-      - name: Update Cargo.toml version
-        run: |
-          (Get-Content "src-tauri/Cargo.toml") -replace 'version = ".*"', 'version = "${{ steps.version.outputs.VERSION }}"' | Set-Content "src-tauri/Cargo.toml"
-
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
         with:
